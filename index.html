@@ -31,14 +31,15 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const width = Math.ceil(Math.sqrt(binary.length));
-        canvas.width = width;
-        canvas.height = width;
+        const size = 20; // size of each pixel in pixels
+        canvas.width = width * size;
+        canvas.height = width * size;
         let x = 0;
         let y = 0;
         for (let i = 0; i < binary.length; i++) {
           const color = binary[i] === '1' ? 'black' : 'white';
           ctx.fillStyle = color;
-          ctx.fillRect(x, y, 1, 1);
+          ctx.fillRect(x * size, y * size, size, size);
           x++;
           if (x >= width) {
             x = 0;
