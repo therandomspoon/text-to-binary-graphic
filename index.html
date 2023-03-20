@@ -15,6 +15,10 @@
       <button type="submit">Convert</button>
     </form>
     <canvas id="canvas"></canvas>
+    <form onsubmit="convertBinaryToText(event)">
+      <button type="submit">Convert Image to Text</button>
+      <textarea id="text-output"></textarea>
+    </form>
     <script>
       function convertTextToBinary(event) {
         event.preventDefault();
@@ -46,6 +50,27 @@
             y++;
           }
         }
+      }
+
+      function convertBinaryToText(event) {
+        event.preventDefault();
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let binary = '';
+        for (let i = 0; i < imageData.data.length; i += 4) {
+          const r = imageData.data[i];
+          const g = imageData.data[i + 1];
+          const b = imageData.data[i + 2];
+          const color = r === 0 && g === 0 && b === 0 ? '1' : '0';
+          binary += color;
+        }
+        const text = binary
+          .match(/.{1,8}/g)
+          .map((byte) => String.fromCharCode(parseInt(byte, 2)))
+          .join('');
+        const textOutput = document.getElementById('text-output');
+        textOutput.value = text;
       }
     </script>
   </body>
