@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Text to Binary Converter</title>
+    <style>
+      #canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <form onsubmit="convertTextToBinary(event)">
+      <label for="text-input">Enter text to convert:</label>
+      <input type="text" id="text-input" />
+      <button type="submit">Convert</button>
+    </form>
+    <canvas id="canvas"></canvas>
+    <script>
+      function convertTextToBinary(event) {
+        event.preventDefault();
+        const textInput = document.getElementById('text-input');
+        const text = textInput.value;
+        const binary = text
+          .split('')
+          .map((char) => char.charCodeAt(0).toString(2))
+          .join('');
+        drawBinaryImage(binary);
+      }
+
+      function drawBinaryImage(binary) {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const width = Math.ceil(Math.sqrt(binary.length));
+        canvas.width = width;
+        canvas.height = width;
+        let x = 0;
+        let y = 0;
+        for (let i = 0; i < binary.length; i++) {
+          const color = binary[i] === '1' ? 'black' : 'white';
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, 1, 1);
+          x++;
+          if (x >= width) {
+            x = 0;
+            y++;
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
