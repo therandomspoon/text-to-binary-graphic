@@ -9,32 +9,32 @@
     </style>
   </head>
   <body>
-    <form onsubmit="convertImageToBinary(event)">
-      <label for="image-input">Select an image to convert:</label>
-      <input type="file" id="image-input" accept="image/*"/>
-      <button type="submit">Convert</button>
-    </form>
-    <canvas id="canvas"></canvas>
-    <form onsubmit="convertBinaryToText(event)">
-      <button type="submit">Convert Binary to Text</button>
-      <textarea id="text-output"></textarea>
-    </form>
-    <script>
-      function convertImageToBinary(event) {
-        event.preventDefault();
-        const imageInput = document.getElementById('image-input');
-        const file = imageInput.files[0];
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          const binary = getBinaryFromImage(event.target.result);
-          drawBinaryImage(binary);
-        };
-        reader.readAsDataURL(file);
-      }
+  <form onsubmit="convertImageToBinary(event)">
+    <label for="image-input">Select an image to convert:</label>
+    <input type="file" id="image-input" accept="image/*"/>
+    <button type="submit">Convert</button>
+  </form>
+  <canvas id="canvas"></canvas>
+  <form onsubmit="convertBinaryToText(event)">
+    <button type="submit">Convert Binary to Text</button>
+    <textarea id="text-output"></textarea>
+  </form>
+  <script>
+    function convertImageToBinary(event) {
+      event.preventDefault();
+      const imageInput = document.getElementById('image-input');
+      const file = imageInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const binary = getBinaryFromImage(event.target.result);
+        drawBinaryImage(binary);
+      };
+      reader.readAsDataURL(file);
+    }
 
-      function getBinaryFromImage(imageData) {
-        const img = document.createElement('img');
-        img.src = imageData;
+    function getBinaryFromImage(imageData) {
+      const img = new Image();
+      img.onload = function() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = img.width;
@@ -49,57 +49,59 @@
           const color = r === 0 && g === 0 && b === 0 ? '1' : '0';
           binary += color;
         }
-        return binary;
+        drawBinaryImage(binary);
       }
+      img.src = imageData;
+    }
 
-      function drawBinaryImage(binary) {
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const width = Math.ceil(Math.sqrt(binary.length));
-        const size = 20; // size of each pixel in pixels
-        canvas.width = width * size;
-        canvas.height = width * size;
-        let x = 0;
-        let y = 0;
-        for (let i = 0; i < binary.length; i++) {
-          const color = binary[i] === '1' ? 'black' : 'white';
-          ctx.fillStyle = color;
-          ctx.fillRect(x * size, y * size, size, size);
-          x++;
-          if (x >= width) {
-            x = 0;
-            y++;
-          }
+    function drawBinaryImage(binary) {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const width = Math.ceil(Math.sqrt(binary.length));
+      const size = 20; // size of each pixel in pixels
+      canvas.width = width * size;
+      canvas.height = width * size;
+      let x = 0;
+      let y = 0;
+      for (let i = 0; i < binary.length; i++) {
+        const color = binary[i] === '1' ? 'black' : 'white';
+        ctx.fillStyle = color;
+        ctx.fillRect(x * size, y * size, size, size);
+        x++;
+        if (x >= width) {
+          x = 0;
+          y++;
         }
       }
+    }
 
-      function convertBinaryToText(event) {
-        event.preventDefault();
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let binary = '';
-        for (let i = 0; i < imageData.data.length; i += 4) {
-          const r = imageData.data[i];
-          const g = imageData.data[i + 1];
-          const b = imageData.data[i + 2];
-          const color = r === 0 && g === 0 && b === 0 ? '1' : '0';
-          binary += color;
-        }
-        const text = binaryToText(binary);
-        const textOutput = document.getElementById('text-output');
-        textOutput.value = text;
-        }
-        function binaryToText(binary) {
-        let text = '';
-        for (let i = 0; i < binary.length; i += 8) {
-          const byte = binary.substr(i, 8);
-          const charCode = parseInt(byte, 2);
-          const character = String.fromCharCode(charCode);
-          text += character;
-        }
-        return text;
-       }
-    </script>
-  </body>
-</html>
+    function convertBinaryToText(event) {
+  event.preventDefault();
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let binary = '';
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    const r = imageData.data[i];
+    const g = imageData.data[i + 1];
+    const b = imageData.data[i + 2];
+    const color = r === 0 && g === 0 && b === 0 ? '1' : '0';
+    binary += color;
+  }
+  const text = binaryToText(binary);
+  const textOutput = document.getElementById('text-output');
+  textOutput.value = text;
+}
+
+function binaryToText(binary) {
+  let text = '';
+  for (let i = 0; i < binary.length; i += 8) {
+    const byte = binary.substr(i, 8);
+    const charCode = parseInt(byte, 2);
+    const character = String.fromCharCode(charCode);
+    text += character;
+  }
+  return text;
+}
+
+
